@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UGC NET Geography Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e1117;
+    --surface: #161b25;
+    --border: rgba(255,255,255,0.08);
+    --accent: #f0c040;
+    --accent2: #4db8ff;
+    --correct: #52c97e;
+    --wrong: #f06060;
+    --text: #e8e6df;
+    --muted: rgba(232,230,223,0.5);
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 24px 16px 48px;
+    background-image:
+      radial-gradient(ellipse at 10% 0%, rgba(77,184,255,0.07) 0%, transparent 55%),
+      radial-gradient(ellipse at 90% 100%, rgba(240,192,64,0.06) 0%, transparent 50%);
+  }
+
+  .wrap { width: 100%; max-width: 620px; }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-icon {
+    width: 46px; height: 46px;
+    background: linear-gradient(135deg, var(--accent), #e07020);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .header-text { flex: 1; }
+  .header-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(16px, 4vw, 20px);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .header-sub {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  /* Progress */
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 99px;
+    transition: width 0.4s cubic-bezier(.4,0,.2,1);
+  }
+  .progress-text {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* Score mini bar */
+  .score-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .score-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .score-chip .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .score-chip.c .dot { background: var(--correct); }
+  .score-chip.w .dot { background: var(--wrong); }
+  .score-chip span { color: var(--text); }
+
+  /* Topic badge */
+  .topic-badge {
+    display: inline-block;
+    background: rgba(77,184,255,0.1);
+    border: 1px solid rgba(77,184,255,0.25);
+    color: var(--accent2);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 99px;
+    margin-bottom: 12px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 20px;
+  }
+
+  .q-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .q-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .q-source {
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .question {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(15px, 3.5vw, 18px);
+    color: var(--text);
+    line-height: 1.55;
+    margin-bottom: 22px;
+  }
+
+  /* Options */
+  .options { display: flex; flex-direction: column; gap: 8px; }
+
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-align: left;
+    width: 100%;
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.4;
+  }
+  .opt:hover {
+    background: rgba(77,184,255,0.07);
+    border-color: rgba(77,184,255,0.3);
+    transform: translateX(3px);
+  }
+  .opt .label {
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: all 0.18s;
+  }
+  .opt.correct {
+    background: rgba(82,201,126,0.1);
+    border-color: var(--correct);
+    transform: translateX(3px);
+  }
+  .opt.correct .label { background: var(--correct); border-color: var(--correct); color: #0e1117; }
+  .opt.wrong {
+    background: rgba(240,96,96,0.08);
+    border-color: var(--wrong);
+  }
+  .opt.wrong .label { background: var(--wrong); border-color: var(--wrong); color: white; }
+  .opt.dimmed { opacity: 0.3; pointer-events: none; }
+  .opt:disabled { pointer-events: none; }
+
+  /* Feedback */
+  .feedback {
+    margin-top: 14px;
+    padding: 11px 14px;
+    border-radius: 9px;
+    font-size: 13px;
+    line-height: 1.5;
+    display: none;
+    animation: fadeup 0.25s ease;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok { background: rgba(82,201,126,0.08); border: 1px solid rgba(82,201,126,0.25); color: var(--correct); }
+  .feedback.no { background: rgba(240,96,96,0.07); border: 1px solid rgba(240,96,96,0.2); color: #f08080; }
+
+  @keyframes fadeup {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Next btn */
+  .next-btn {
+    display: none;
+    width: 100%;
+    margin-top: 16px;
+    padding: 13px;
+    background: var(--accent);
+    color: #0e1117;
+    border: none; border-radius: 10px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s;
+    letter-spacing: 0.02em;
+  }
+  .next-btn.show { display: block; animation: fadeup 0.25s ease; }
+  .next-btn:hover { background: #f5d060; transform: translateY(-1px); }
+
+  /* Score screen */
+  .score-screen {
+    display: none;
+    text-align: center;
+    animation: fadeup 0.4s ease;
+  }
+  .score-screen.show { display: block; }
+
+  .trophy { font-size: 56px; display: block; margin-bottom: 12px; }
+  .score-pct {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(56px, 18vw, 80px);
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .score-grade {
+    font-size: 20px;
+    font-family: 'Libre Baskerville', serif;
+    color: var(--text);
+    margin-bottom: 24px;
+  }
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .stat-box {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 20px;
+    min-width: 90px;
+  }
+  .stat-box .v { font-size: 28px; font-weight: 700; display: block; }
+  .stat-box .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
+  .stat-box.c .v { color: var(--correct); }
+  .stat-box.w .v { color: var(--wrong); }
+  .stat-box.t .v { color: var(--accent2); }
+
+  .restart-btn {
+    background: transparent;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    padding: 12px 32px;
+    border-radius: 10px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s;
+    margin-right: 10px;
+  }
+  .restart-btn:hover { background: var(--accent); color: #0e1117; }
+
+  /* Filter bar */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .filter-btn {
+    padding: 5px 12px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .filter-btn.active {
+    background: rgba(240,192,64,0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="header-icon">📐</div>
+    <div class="header-text">
+      <div class="header-title">UGC NET Geography</div>
+      <div class="header-sub">Solved Papers Quiz · Paper II & III</div>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" onclick="setFilter('all', this)">All Topics</button>
+    <button class="filter-btn" onclick="setFilter('Geomorphology', this)">Geomorphology</button>
+    <button class="filter-btn" onclick="setFilter('Climatology', this)">Climatology</button>
+    <button class="filter-btn" onclick="setFilter('Human Geography', this)">Human Geo</button>
+    <button class="filter-btn" onclick="setFilter('India', this)">India</button>
+    <button class="filter-btn" onclick="setFilter('Geographical Thought', this)">Geo Thought</button>
+    <button class="filter-btn" onclick="setFilter('Statistics', this)">Statistics</button>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-row">
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-text" id="progressText">1 / 50</div>
+  </div>
+  <div class="score-row">
+    <div class="score-chip c"><div class="dot"></div><span id="cCount">0</span> correct</div>
+    <div class="score-chip w"><div class="dot"></div><span id="wCount">0</span> wrong</div>
+  </div>
+
+  <!-- Quiz card -->
+  <div class="card" id="quizCard">
+    <div class="q-meta">
+      <div class="q-num" id="qNum">Q 1</div>
+      <div class="q-source" id="qSource"></div>
+    </div>
+    <div class="topic-badge" id="topicBadge"></div>
+    <div class="question" id="questionText"></div>
+    <div class="options" id="optionsDiv"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQ()">Next Question →</button>
+  </div>
+
+  <!-- Score screen -->
+  <div class="card score-screen" id="scoreScreen">
+    <span class="trophy" id="trophy">🏅</span>
+    <div class="score-pct" id="scorePct"></div>
+    <div class="score-grade" id="scoreGrade"></div>
+    <div class="stats-row">
+      <div class="stat-box c"><span class="v" id="sc"></span><span class="l">Correct</span></div>
+      <div class="stat-box w"><span class="v" id="sw"></span><span class="l">Wrong</span></div>
+      <div class="stat-box t"><span class="v" id="st"></span><span class="l">Total</span></div>
+    </div>
+    <button class="restart-btn" onclick="restart()">Try Again</button>
+  </div>
+</div>
+
+<script>
+const ALL_QUESTIONS = [
+  // === GEOMORPHOLOGY ===
+  { topic: "Geomorphology", src: "Dec 2006 Paper II",
+    q: "Indus and Brahmaputra are examples of which type of drainage?",
+    opts: ["Subsequent drainage","Superimposed drainage","Antecedent drainage","Consequent drainage"], ans: 2 },
+  { topic: "Geomorphology", src: "Jun 2007 Paper II",
+    q: "Whaleback dunes are characteristic features of which environment?",
+    opts: ["Glacial deposits","Desert wind erosion","Coastal sedimentation","Fluvial deposition"], ans: 1 },
+  { topic: "Geomorphology", src: "Sep 2013 Paper II",
+    q: "The principle that present-day processes have been operating throughout geological time is called—",
+    opts: ["Continental drift","Uniformitarianism","Earth Systems theory","Plate Tectonics"], ans: 1 },
+  { topic: "Geomorphology", src: "Sep 2013 Paper III",
+    q: "Knick points are associated with—",
+    opts: ["River Rejuvenation","Glacial Erosion","Aeolian Deposits","Karst topography"], ans: 0 },
+  { topic: "Geomorphology", src: "Sep 2013 Paper III",
+    q: "When the Kaveri river enters Tamil Nadu, which waterfall does it create?",
+    opts: ["Hoggenakka fall","Jog fall","Five falls","Paghaya Kotlam"], ans: 0 },
+  { topic: "Geomorphology", src: "Sep 2013 Paper III",
+    q: "Peninsulas make up most of which pair of countries?",
+    opts: ["Italy and Denmark","Poland and France","Ireland and Great Britain","Austria and Czech Republic"], ans: 0 },
+  { topic: "Geomorphology", src: "Jun 2015 Paper III",
+    q: "Which of the following is formed due to tectonic forces?",
+    opts: ["Rift valley","Hanging valley","Super imposed valley","Antecedent valley"], ans: 0 },
+  { topic: "Geomorphology", src: "Jun 2015 Paper III",
+    q: "Drowned glaciated valleys in high latitude regions are known as—",
+    opts: ["Ocean trenches","Submarine ridges","Fjords","Cirques"], ans: 2 },
+  { topic: "Geomorphology", src: "Jun 2015 Paper III",
+    q: "Excessive folding results in—",
+    opts: ["Reverse fault","Geosyncline","Nappe formation","Block disintegration"], ans: 2 },
+  { topic: "Geomorphology", src: "Jun 2015 Paper II",
+    q: "Who postulated the concept of Base level?",
+    opts: ["Walther Penck","W.M. Davis","J.W. Powell","James Hutton"], ans: 2 },
+
+  // === CLIMATOLOGY ===
+  { topic: "Climatology", src: "Sep 2013 Paper III",
+    q: "Which US city was struck by Hurricane Katrina?",
+    opts: ["New York","Houston","New Orleans","Miami"], ans: 2 },
+  { topic: "Climatology", src: "Sep 2013 Paper III",
+    q: "Ozone hole is located above the—",
+    opts: ["Antarctica","Arctic Ocean","Equatorial zone","Greenland"], ans: 0 },
+  { topic: "Climatology", src: "Sep 2013 Paper III",
+    q: "A sudden, violent, gusty wind lasting a minute or two, usually accompanied by rain or hail, is called—",
+    opts: ["Thunderstorm","Hoar","Blizzard","Squall"], ans: 3 },
+  { topic: "Climatology", src: "Sep 2013 Paper III",
+    q: "Tornadoes are most likely to occur during—",
+    opts: ["Mid-morning","Mid-afternoon","Noon","Late evening"], ans: 1 },
+  { topic: "Climatology", src: "Jun 2015 Paper II",
+    q: "According to George Hadley's single-cell circulation model, the most important factor causing global atmospheric circulation is—",
+    opts: ["The rotation of the earth","The jet stream","Subsidence at the equator","Temperature contrast between equator and pole"], ans: 3 },
+  { topic: "Climatology", src: "Jun 2015 Paper II",
+    q: "Surface circulation of ocean water is driven by—",
+    opts: ["Resisting force","Tidal force","Gravitational force","Blowing wind"], ans: 3 },
+  { topic: "Climatology", src: "Jun 2015 Paper II",
+    q: "Coastal area greatly affected by storm surge is—",
+    opts: ["Andhra coast","West Bengal coast","Chennai coast","Kerala coast"], ans: 1 },
+  { topic: "Climatology", src: "Jun 2015 Paper III",
+    q: "Which type of clouds appears at the highest level in the sky?",
+    opts: ["Alto-cumulus","Cirro-cumulus","Cumulo-nimbus","Strato-cumulus"], ans: 1 },
+  { topic: "Climatology", src: "Dec 2006 Paper II",
+    q: "The average time interval between two successive high tides is—",
+    opts: ["6 hrs 13 min","12 hrs 26 min","24 hrs 50 min","18 hrs 39 min"], ans: 1 },
+  { topic: "Climatology", src: "Jun 2015 Paper III",
+    q: "The vertical movement of cold water from deeper oceanic layers to replace warmer surface water is called—",
+    opts: ["Turbidity","Emergence","Upwelling","Halocline"], ans: 2 },
+
+  // === HUMAN GEOGRAPHY ===
+  { topic: "Human Geography", src: "Dec 2013 Paper II",
+    q: "The concept of 'Cultural landscape' was promoted by—",
+    opts: ["Ratzel","Anne Buttimer","Carl Sauer","Wilbur Zelinsky"], ans: 2 },
+  { topic: "Human Geography", src: "Sep 2013 Paper II",
+    q: "Humanistic Geography aims at 'Verstehn', that is—",
+    opts: ["Life style of man","Inter-personal relations of men","Understanding of man in his environment","Objective experiences of man"], ans: 2 },
+  { topic: "Human Geography", src: "Sep 2013 Paper II",
+    q: "Who wrote the book 'Airs, Water and Places'?",
+    opts: ["Anaximander","Hippocrates","Eratosthenes","Hecateus"], ans: 1 },
+  { topic: "Human Geography", src: "Dec 2013 Paper II",
+    q: "Who, among the following, propounded the concept of compage?",
+    opts: ["Minshull","Blache","Whittlesey","Isard"], ans: 2 },
+  { topic: "Human Geography", src: "Jun 2015 Paper II",
+    q: "Who is the pioneer in Commercial Geography?",
+    opts: ["H.J. Mackinder","G.G. Chisholm","Patrick Geddes","A.J. Herbertson"], ans: 1 },
+  { topic: "Human Geography", src: "Jun 2015 Paper II",
+    q: "Which philosopher propagated the principle of 'Unity in Diversity'?",
+    opts: ["Carl Ritter","Immanuel Kant","Alexander Von Humboldt","O.H.K. Spate"], ans: 0 },
+  { topic: "Human Geography", src: "Jun 2015 Paper II",
+    q: "To which school of Geography does E.C. Semple belong?",
+    opts: ["American School","Russian School","British School","French School"], ans: 0 },
+  { topic: "Human Geography", src: "Dec 2006 Paper II",
+    q: "Who is known as the father of Political Geography?",
+    opts: ["Rudolf Kjellen","K. Haushofer","F. Ratzel","R. Hartshorne"], ans: 2 },
+  { topic: "Human Geography", src: "Dec 2006 Paper II",
+    q: "Who gave the concept of Rimland Theory in political geography?",
+    opts: ["N.J. Spykman","E. Warner","H.W. Weigert","A.T. Mahan"], ans: 0 },
+  { topic: "Human Geography", src: "Jun 2015 Paper II",
+    q: "Heartland Theory is postulated by—",
+    opts: ["P.E. James","H.J. Mackinder","G.G. Chisholm","H.R. Mill"], ans: 1 },
+
+  // === GEOGRAPHICAL THOUGHT ===
+  { topic: "Geographical Thought", src: "Dec 2006 Paper II",
+    q: "The philosophical view advocating that man is responsible for making his own nature is known as—",
+    opts: ["Positivism","Functionalism","Existentialism","Pragmatism"], ans: 2 },
+  { topic: "Geographical Thought", src: "Sep 2013 Paper II",
+    q: "The regularity between the sizes of cities and their rank was first noted by—",
+    opts: ["Jefferson","Zipf","Christaller","Auerbach"], ans: 3 },
+  { topic: "Geographical Thought", src: "Sep 2013 Paper III",
+    q: "The concept of Paradigm was primarily developed in the philosophy of science by—",
+    opts: ["Thomas Kuhn","Karl Popper","Auguste Comte","Immanuel Kant"], ans: 0 },
+  { topic: "Geographical Thought", src: "Jun 2015 Paper III",
+    q: "Who propounded the alternate trilogy of Environment-Function-Organism in geography?",
+    opts: ["Roxby","Geddes","Herbertsen","Chisholm"], ans: 1 },
+  { topic: "Geographical Thought", src: "Jun 2015 Paper III",
+    q: "The place where an organism or community of organisms lives is called—",
+    opts: ["Environment","Atmosphere","Habitat","Society"], ans: 2 },
+  { topic: "Geographical Thought", src: "Jun 2015 Paper III",
+    q: "Photosynthesis is the process by which—",
+    opts: ["Radiant energy is converted into chemical energy","Chemical energy is converted into radiant energy","Kinetic energy is converted into potential energy","Thermal energy is converted into mechanical energy"], ans: 0 },
+
+  // === INDIA ===
+  { topic: "India", src: "Sep 2013 Paper II",
+    q: "Anacondas are largely found in—",
+    opts: ["Irrawady Basin","Congo Basin","Orinoco Basin","Amazon Basin"], ans: 3 },
+  { topic: "India", src: "Sep 2013 Paper II",
+    q: "Which one of the following rock systems is the main source of coal in India?",
+    opts: ["Gondwana","Cuddappa","Vindhyan","Dharwar"], ans: 0 },
+  { topic: "India", src: "Jun 2014 Paper II",
+    q: "The longest west-flowing Peninsular river is—",
+    opts: ["Godavari","Krishna","Narmada","Tapti"], ans: 2 },
+  { topic: "India", src: "Sep 2013 Paper III",
+    q: "Which one of the following major sea ports of India does not have a natural harbour?",
+    opts: ["Marmagao","Mumbai","Cochin","Paradeep"], ans: 3 },
+  { topic: "India", src: "Dec 2006 Paper II",
+    q: "Kargil is located on the banks of which river?",
+    opts: ["Indus","Suru","Jhelum","Shyok"], ans: 1 },
+  { topic: "India", src: "Dec 2006 Paper II",
+    q: "McMahon Line is an international boundary between—",
+    opts: ["India and Bangladesh","India and China","India and Pakistan","India and Nepal"], ans: 1 },
+  { topic: "India", src: "Jun 2015 Paper II",
+    q: "Who has designed the plan of Chandigarh city?",
+    opts: ["Ernst May","Le Corbusier","Patrick Geddes","Ebenezer Howard"], ans: 1 },
+  { topic: "India", src: "Dec 2013 Paper II",
+    q: "Which one of the following Islamic countries is predominantly of Shia sect?",
+    opts: ["Iraq","Iran","Pakistan","Afghanistan"], ans: 1 },
+
+  // === STATISTICS / RS / CARTOGRAPHY ===
+  { topic: "Statistics", src: "Jun 2015 Paper II",
+    q: "Which one of the following central tendencies is the appropriate method for the study of dispersion?",
+    opts: ["Arithmetic mean","Median","Mode","Geometric mean"], ans: 1 },
+  { topic: "Statistics", src: "Jun 2014 Paper II",
+    q: "The main source of carbon monoxide as an air pollutant is—",
+    opts: ["Thermal decomposition of fats","Dye-making","Blast furnaces","Gasoline motor exhausts"], ans: 3 },
+  { topic: "Statistics", src: "Jun 2015 Paper II",
+    q: "Which cartographic technique is suitable for measuring spatial association among different attributes of regional economy?",
+    opts: ["Dot map","Chorochromatic map","Choropleth map","Flow map"], ans: 2 },
+  { topic: "Statistics", src: "Sep 2013 Paper II",
+    q: "In order to identify Qutub Minar on an aerial photograph, which element of image interpretation would be most expressive?",
+    opts: ["Shape","Shadow","Tone","Texture"], ans: 1 },
+  { topic: "Statistics", src: "Dec 2006 Paper II",
+    q: "It is necessary to know both the latitude and longitude of a place in order to determine—",
+    opts: ["Local time","Altitude","Standard time","Location"], ans: 3 },
+  { topic: "Statistics", src: "Sep 2013 Paper II",
+    q: "Which one of the following is associated with shifting cultivation?",
+    opts: ["Rotation of field","Absence of draught animals","Homestead is never shifted","Great catalytic force for community life"], ans: 0 },
+  { topic: "Statistics", src: "Jun 2015 Paper III",
+    q: "Which type of sea floor sediments includes calcareous and siliceous oozes?",
+    opts: ["Fluvial","Terrigenous","Biogenous","Hydrogenous"], ans: 2 },
+];
+
+let activeFilter = 'all';
+let questions = [];
+let current = 0;
+let correct = 0;
+let wrong = 0;
+let answered = false;
+const LABELS = ['A','B','C','D'];
+
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  restart();
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function restart() {
+  current = 0; correct = 0; wrong = 0; answered = false;
+  questions = shuffle([...(activeFilter === 'all' ? ALL_QUESTIONS : ALL_QUESTIONS.filter(q => q.topic === activeFilter))]);
+  document.getElementById('quizCard').style.display = 'block';
+  document.getElementById('scoreScreen').className = 'card score-screen';
+  document.getElementById('cCount').textContent = 0;
+  document.getElementById('wCount').textContent = 0;
+  loadQ();
+}
+
+function loadQ() {
+  answered = false;
+  const q = questions[current];
+  const total = questions.length;
+
+  document.getElementById('qNum').textContent = `Q ${current + 1}`;
+  document.getElementById('qSource').textContent = q.src;
+  document.getElementById('topicBadge').textContent = q.topic;
+  document.getElementById('questionText').textContent = q.q;
+  document.getElementById('progressFill').style.width = `${(current / total) * 100}%`;
+  document.getElementById('progressText').textContent = `${current + 1} / ${total}`;
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  fb.textContent = '';
+
+  const nb = document.getElementById('nextBtn');
+  nb.className = 'next-btn';
+  nb.textContent = current === total - 1 ? 'See Results 🏁' : 'Next Question →';
+
+  const div = document.getElementById('optionsDiv');
+  div.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = `<span class="label">${LABELS[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => pick(i, btn);
+    div.appendChild(btn);
+  });
+}
+
+function pick(idx, btn) {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  const all = document.querySelectorAll('.opt');
+
+  all.forEach((b, i) => {
+    if (i === q.ans) b.classList.add('correct');
+    else if (i === idx && idx !== q.ans) b.classList.add('wrong');
+    else b.classList.add('dimmed');
+  });
+
+  const fb = document.getElementById('feedback');
+  if (idx === q.ans) {
+    correct++;
+    fb.className = 'feedback ok show';
+    fb.textContent = '✓ Correct!';
+  } else {
+    wrong++;
+    fb.className = 'feedback no show';
+    fb.textContent = `✗ The correct answer is: ${q.opts[q.ans]}`;
+  }
+
+  document.getElementById('cCount').textContent = correct;
+  document.getElementById('wCount').textContent = wrong;
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+function nextQ() {
+  current++;
+  if (current >= questions.length) showScore();
+  else loadQ();
+}
+
+function showScore() {
+  document.getElementById('quizCard').style.display = 'none';
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressText').textContent = 'Complete!';
+
+  const total = questions.length;
+  const pct = Math.round((correct / total) * 100);
+  let grade, trophy;
+  if (pct >= 90) { grade = 'Outstanding! JRF Territory 🌟'; trophy = '🏆'; }
+  else if (pct >= 75) { grade = 'Excellent! Assistant Professor Ready'; trophy = '🥇'; }
+  else if (pct >= 60) { grade = 'Good Performance. Keep Revising!'; trophy = '🥈'; }
+  else if (pct >= 45) { grade = 'Average. More Practice Needed'; trophy = '🥉'; }
+  else { grade = 'Need to Study Harder. Don\'t Give Up!'; trophy = '📚'; }
+
+  document.getElementById('trophy').textContent = trophy;
+  document.getElementById('scorePct').textContent = pct + '%';
+  document.getElementById('scoreGrade').textContent = grade;
+  document.getElementById('sc').textContent = correct;
+  document.getElementById('sw').textContent = wrong;
+  document.getElementById('st').textContent = total;
+  document.getElementById('scoreScreen').className = 'card score-screen show';
+}
+
+restart();
+</script>
+</body>
+</html>
