@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UGC NET Geography — December 2024</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0e1117;
+    --surface: #161b25;
+    --border: rgba(255,255,255,0.08);
+    --accent: #f0c040;
+    --accent2: #4db8ff;
+    --correct: #52c97e;
+    --wrong: #f06060;
+    --text: #e8e6df;
+    --muted: rgba(232,230,223,0.5);
+  }
+  body {
+    background: var(--bg);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px 16px 60px;
+    background-image:
+      radial-gradient(ellipse at 10% 0%, rgba(77,184,255,0.07) 0%, transparent 55%),
+      radial-gradient(ellipse at 90% 100%, rgba(240,192,64,0.06) 0%, transparent 50%);
+  }
+  .wrap { width: 100%; max-width: 640px; }
+
+  /* HEADER */
+  .header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 24px; padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-icon {
+    width: 46px; height: 46px;
+    background: linear-gradient(135deg, var(--accent), #e07020);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .header-title { font-family: 'Libre Baskerville', serif; font-size: clamp(15px,4vw,19px); font-weight: 700; color: var(--text); line-height: 1.2; }
+  .header-sub { font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 3px; }
+
+  /* PROGRESS */
+  .progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .progress-track { flex: 1; height: 4px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent)); border-radius: 99px; transition: width 0.4s cubic-bezier(.4,0,.2,1); }
+  .progress-text { font-size: 12px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .score-row { display: flex; gap: 16px; margin-bottom: 18px; }
+  .score-chip { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .score-chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .score-chip.c .dot { background: var(--correct); }
+  .score-chip.w .dot { background: var(--wrong); }
+  .score-chip span { color: var(--text); }
+
+  /* CARD */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px 18px; }
+  .q-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .q-num { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .topic-badge { display: inline-block; background: rgba(77,184,255,0.1); border: 1px solid rgba(77,184,255,0.25); color: var(--accent2); font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 99px; margin-bottom: 10px; }
+  .question { font-family: 'Libre Baskerville', serif; font-size: clamp(14px,3.5vw,17px); color: var(--text); line-height: 1.55; margin-bottom: 18px; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt { display: flex; align-items: flex-start; gap: 12px; background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 11px 14px; cursor: pointer; transition: all 0.18s ease; text-align: left; width: 100%; color: var(--text); font-family: 'IBM Plex Sans', sans-serif; font-size: 13.5px; font-weight: 400; -webkit-tap-highlight-color: transparent; line-height: 1.4; }
+  .opt:hover { background: rgba(77,184,255,0.07); border-color: rgba(77,184,255,0.3); transform: translateX(3px); }
+  .opt .lbl { min-width: 26px; height: 26px; border-radius: 7px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--muted); flex-shrink: 0; transition: all 0.18s; margin-top: 1px; }
+  .opt.correct { background: rgba(82,201,126,0.1); border-color: var(--correct); transform: translateX(3px); }
+  .opt.correct .lbl { background: var(--correct); border-color: var(--correct); color: #0e1117; }
+  .opt.wrong { background: rgba(240,96,96,0.08); border-color: var(--wrong); }
+  .opt.wrong .lbl { background: var(--wrong); border-color: var(--wrong); color: white; }
+  .opt.dimmed { opacity: 0.3; pointer-events: none; }
+
+  /* FEEDBACK */
+  .feedback { margin-top: 12px; padding: 10px 14px; border-radius: 9px; font-size: 13px; line-height: 1.5; display: none; animation: fadeup 0.25s ease; }
+  .feedback.show { display: block; }
+  .feedback.ok { background: rgba(82,201,126,0.08); border: 1px solid rgba(82,201,126,0.25); color: var(--correct); }
+  .feedback.no { background: rgba(240,96,96,0.07); border: 1px solid rgba(240,96,96,0.2); color: #f08080; }
+  @keyframes fadeup { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* NEXT BTN */
+  .next-btn { display: none; width: 100%; margin-top: 14px; padding: 13px; background: var(--accent); color: #0e1117; border: none; border-radius: 10px; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.18s; letter-spacing: 0.02em; }
+  .next-btn.show { display: block; animation: fadeup 0.25s ease; }
+  .next-btn:hover { background: #f5d060; transform: translateY(-1px); }
+
+  /* SCORE SCREEN */
+  .score-screen { display: none; animation: fadeup 0.4s ease; }
+  .score-screen.show { display: block; }
+  .score-top { text-align: center; padding: 28px 20px 24px; }
+  .trophy { font-size: 52px; display: block; margin-bottom: 10px; }
+  .score-pct { font-family: 'Libre Baskerville', serif; font-size: clamp(52px,16vw,76px); font-weight: 700; color: var(--accent); line-height: 1; margin-bottom: 4px; }
+  .score-grade { font-size: 18px; font-family: 'Libre Baskerville', serif; color: var(--text); margin-bottom: 22px; }
+  .stats-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+  .stat-box { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; min-width: 80px; text-align: center; }
+  .stat-box .v { font-size: 26px; font-weight: 700; display: block; }
+  .stat-box .l { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
+  .stat-box.c .v { color: var(--correct); }
+  .stat-box.w .v { color: var(--wrong); }
+  .stat-box.t .v { color: var(--accent2); }
+  .restart-btn { background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 11px 28px; border-radius: 10px; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.18s; margin-bottom: 28px; }
+  .restart-btn:hover { background: var(--accent); color: #0e1117; }
+
+  /* WRONG ANSWERS REVIEW */
+  .review-section { margin-top: 8px; }
+  .review-title { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--wrong); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .review-title .badge { background: rgba(240,96,96,0.15); border: 1px solid rgba(240,96,96,0.3); padding: 3px 10px; border-radius: 99px; font-size: 11px; }
+  .review-item { background: rgba(255,255,255,0.02); border: 1px solid rgba(240,96,96,0.2); border-radius: 12px; padding: 16px; margin-bottom: 10px; animation: fadeup 0.3s ease; }
+  .review-q-num { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--wrong); margin-bottom: 6px; }
+  .review-q-text { font-family: 'Libre Baskerville', serif; font-size: 13.5px; color: var(--text); line-height: 1.5; margin-bottom: 10px; }
+  .review-answers { display: flex; flex-direction: column; gap: 6px; }
+  .review-ans { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; line-height: 1.4; }
+  .review-ans .tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+  .review-ans.your .tag { background: rgba(240,96,96,0.15); color: var(--wrong); }
+  .review-ans.correct .tag { background: rgba(82,201,126,0.15); color: var(--correct); }
+  .review-ans.your .text { color: #f08080; }
+  .review-ans.correct .text { color: var(--correct); }
+
+  .no-wrong { text-align: center; padding: 24px; color: var(--correct); font-size: 15px; font-family: 'Libre Baskerville', serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="header-icon">📐</div>
+    <div>
+      <div class="header-title">UGC NET Geography — Dec 2024</div>
+      <div class="header-sub">NTA · 100 Questions · Full Paper</div>
+    </div>
+  </div>
+
+  <div class="progress-row">
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-text" id="progressText">1 / 100</div>
+  </div>
+  <div class="score-row">
+    <div class="score-chip c"><div class="dot"></div><span id="cCount">0</span> correct</div>
+    <div class="score-chip w"><div class="dot"></div><span id="wCount">0</span> wrong</div>
+  </div>
+
+  <!-- QUIZ CARD -->
+  <div class="card" id="quizCard">
+    <div class="q-meta">
+      <div class="q-num" id="qNum">Q 1</div>
+    </div>
+    <div class="topic-badge" id="topicBadge"></div>
+    <div class="question" id="questionText"></div>
+    <div class="options" id="optionsDiv"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQ()">Next Question →</button>
+  </div>
+
+  <!-- SCORE SCREEN -->
+  <div class="card score-screen" id="scoreScreen">
+    <div class="score-top">
+      <span class="trophy" id="trophy">🏅</span>
+      <div class="score-pct" id="scorePct"></div>
+      <div class="score-grade" id="scoreGrade"></div>
+      <div class="stats-row">
+        <div class="stat-box c"><span class="v" id="sc"></span><span class="l">Correct</span></div>
+        <div class="stat-box w"><span class="v" id="sw"></span><span class="l">Wrong</span></div>
+        <div class="stat-box t"><span class="v" id="st">100</span><span class="l">Total</span></div>
+      </div>
+      <button class="restart-btn" onclick="restart()">Try Again</button>
+    </div>
+
+    <!-- WRONG ANSWERS REVIEW -->
+    <div class="review-section" id="reviewSection"></div>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  { topic:"Oceanography", q:"________ is an important species of the Zooplankton community.", opts:["Euphausiid","Algae","Diatoms","Flagellate"], ans:0 },
+  { topic:"Oceanography", q:"The dynamic theory of tides has been given by ________", opts:["Isaac Newton","Laplace","G.H. Darwin","Marmer"], ans:1 },
+  { topic:"Economic Geography", q:"Critical Isodapane are lines of equal transport cost per unit of production, given by", opts:["Zipf","Losch","Hoover","Weber"], ans:3 },
+  { topic:"Agricultural Geography", q:"Which of the following frames was recognised by Anderson in 1970 while classifying the world's agriculture system? (A) Ecological (B) Industrial (C) Subsistence (D) Commercial", opts:["A, B & C Only","A, C & D Only","A, B & D Only","B, C & D Only"], ans:1 },
+  { topic:"Ecology", q:"A simple example of linear food chain is: (A) Grass (B) Snake (C) Insects (D) Hawk (E) Frogs — choose the correct sequence", opts:["E, D, C, B, A","A, C, E, B, D","A, E, B, C, D","A, C, B, E, D"], ans:1 },
+  { topic:"Oceanography", q:"Which is the largest reservoir of fresh water in the world?", opts:["Caspian Sea","Lake Tanganyika","Lake Baikal","Lake Konstanz"], ans:2 },
+  { topic:"Oceanography", q:"With regard to ocean salinity, which statements are correct? (A) Average Chlorinity is 19.2% (B) Highest salinity belt: 20°–40° N & S (C) Highest salinity belt: 10°–20° N & S (D) Salinity shown by Isohalines", opts:["A, B & D Only","B, C & D Only","A, B & C Only","A, C & D Only"], ans:0 },
+  { topic:"Geomorphology", q:"Which of the following pair of soil structure is suitable for cultivation?", opts:["Granular & Blocky Structure","Columnar Structure & Platy Structure","Clayey & Columnar Structure","Platy & Clayey Structure"], ans:0 },
+  { topic:"Geomorphology", q:"Match Folds (LIST-I) with Limbs (LIST-II): (A) Symmetrical (B) Asymmetrical (C) Monoclinal (D) Isoclinal — (I) Unequal & Irregular (II) Both Limbs incline uniformly (III) Both Limbs become parallel (IV) One Limb inclines at right angle", opts:["A-III, B-I, C-II, D-IV","A-IV, B-II, C-III, D-I","A-II, B-I, C-IV, D-III","A-I, B-II, C-III, D-IV"], ans:2 },
+  { topic:"Geographical Thought", q:"Who coined the term 'network society' in the context of globalisation?", opts:["Ulrich Beck","Anthony Giddens","Manuel Castells","Carl O. Sauer"], ans:2 },
+  { topic:"Geomorphology", q:"Match River Transport Types with Explanations: (A) Saltation (B) Solution (C) Traction (D) Flotation — (I) Chemical load dissolved (II) Heaviest material dragged (III) Leaves & twigs on surface (IV) Heavier particles bounced", opts:["A-III, B-I, C-IV, D-II","A-I, B-II, C-III, D-IV","A-IV, B-I, C-II, D-III","A-II, B-I, C-IV, D-III"], ans:2 },
+  { topic:"India", q:"Arrange peaks of Himalaya in descending order of height: (A) Lhotse (B) Dhaulagiri (C) Annapurna (D) Makalu (E) Kanchenjunga", opts:["E, D, C, B, A","E, B, A, C, D","E, A, D, B, C","E, A, B, D, C"], ans:2 },
+  { topic:"Climatology", q:"Match: (A) Baguio (B) Smaze (C) Simoom (D) Thermal Anomaly — (I) Wind (II) Temperature (III) Storms (IV) Fog", opts:["A-III, B-I, C-II, D-IV","A-IV, B-II, C-III, D-I","A-III, B-IV, C-I, D-II","A-IV, B-II, C-I, D-III"], ans:1 },
+  { topic:"Economic Geography", q:"What are the ideal conditions for location of shipbuilding industry?", opts:["Proximity to Iron & Steel Industry & Skilled Labour","Proximity to Grasslands","Proximity to Delta","Proximity to Markets"], ans:0 },
+  { topic:"Geographical Thought", q:"Match Books (LIST-I) with Authors (LIST-II): (A) Muqaddimah (B) Kosmos (C) Almagest (D) Imago Mundi — (I) Pierre d'Ally (II) Humboldt (III) Ibn-Khaldun (IV) Ptolemy", opts:["A-III, B-I, C-II, D-IV","A-III, B-IV, C-I, D-II","A-III, B-II, C-IV, D-I","A-IV, B-I, C-II, D-III"], ans:2 },
+  { topic:"India", q:"As per 2011 census, arrange states by % urban population in ascending order: (A) Mizoram (B) Goa (C) Kerala (D) Tamil Nadu", opts:["C, D, B, A","A, C, D, A","C, D, A, B","D, C, B, A"], ans:2 },
+  { topic:"Climatology", q:"Match Koppen's Climatic types: (A) Af (B) Cf (C) BSh (D) Aw — (I) Tropical steppe (II) Tropical humid & dry (III) Humid tropical (IV) Western Europe type", opts:["A-II, B-IV, C-I, D-III","A-III, B-IV, C-I, D-II","A-III, B-I, C-IV, D-II","A-III, B-IV, C-II, D-I"], ans:1 },
+  { topic:"Statistics", q:"An ogive is a method in which", opts:["Cumulative frequency is plotted","Simple frequency is measured","Cumulative frequency is measured","Simple frequency is plotted"], ans:0 },
+  { topic:"Remote Sensing", q:"Which of the following is NOT a geosynchronous satellite? (A) METEOSAT (B) GOMS (C) Landsat (D) INSAT", opts:["A & C Only","B & C Only","C Only","D Only"], ans:2 },
+  { topic:"Statistics", q:"Function Wizard in Excel enables you to", opts:["Draw maps","Construct Graphs","Carry out statistical operations","None of the above"], ans:2 },
+  { topic:"Oceanography", q:"With regard to the relief of Atlantic Ocean, which statements are correct? (A) Continental shelf of N. Atlantic are broad & flat (B) Southern mid-Atlantic Ridge = 'Dolphin Rise' (C) Wyville Thompson Ridge is between N. Scotland & Ireland (D) Beyond Cape of Good Hope = Atlantic-Antarctica Ridge (E) Several transverse ridges N & S of mid-Atlantic Ridge", opts:["A, C & D Only","B, C & D Only","A, C & E Only","C, D & E Only"], ans:0 },
+  { topic:"India", q:"Match Rivers (LIST-I) with Source (LIST-II): (A) Ravi (B) Satluj (C) Chenab (D) Indus — (I) Bara Lacha Pass (II) Near Manasarovar Lake (III) Near Rohtang Pass (IV) Manasarovar-Rakas Lakes", opts:["A-IV, B-III, C-I, D-II","A-I, B-IV, C-II, D-III","A-IV, B-III, C-II, D-I","A-III, B-IV, C-I, D-II"], ans:3 },
+  { topic:"Human Geography", q:"Pastoral Nomadism can be identified with: (A) Subsistence activity depending on animals (B) Each community occupies a well-defined territory (C) Animals depend entirely on natural vegetation (D) Mining is an important activity", opts:["B, C & D Only","A, C & D Only","A, B & D Only","A, B & C Only"], ans:3 },
+  { topic:"Cartography", q:"Which one of the following map is known as dynamic Map?", opts:["Flow Map","Dot Map","Isopleth","Choropleth"], ans:0 },
+  { topic:"Climatology", q:"The albedo for the earth as a whole is—", opts:["20 per cent","25 per cent","30 per cent","35 per cent"], ans:3 },
+  { topic:"Population Geography", q:"Which statements are true with respect to fertility? (A) Low age at marriage → low fertility (B) Polygamy & polyandry have negative effect on fertility (C) Positive correlation between birth rate and female status (D) Inverse correlation between education and fertility index", opts:["A & B Only","B & C Only","B & D Only","A & D Only"], ans:2 },
+  { topic:"Agricultural Geography", q:"Which of the following are types of coffee? (A) Liberica (B) Arabica (C) Robusta (D) Darjeeling (E) Oolong", opts:["C, D & E Only","B, C & D Only","A, B & C Only","A, C & E Only"], ans:2 },
+  { topic:"India", q:"Which pairs are correct regarding tribes and their state? (A) Bhils–MP & Gujarat (B) Tharus–Andhra Pradesh (C) Bhutia–Uttarakhand (D) Santhal–Jharkhand (E) Gaddis–Rajasthan", opts:["A, B & D Only","A, C & D Only","C, B & E Only","A, D & E Only"], ans:1 },
+  { topic:"Political Geography", q:"Which is the world's oldest regional organisation?", opts:["Organisation of American States (OAS)","European Free Trade Association (EFTA)","Organisation of African Unity (OAU)","The Arab League"], ans:0 },
+  { topic:"Political Geography", q:"Match Geopolitics Books with Authors: (A) Critical Geopolitics (B) Territory, State & Society (C) Geopolitics: Revisioning World Politics (D) Geopolitics of the World System — (I) John Agnew (II) Gerard Toal (III) Kevin R. Cox (IV) Saul B. Cohen", opts:["A-I, B-III, C-II, D-IV","A-IV, B-II, C-III, D-I","A-II, B-I, C-IV, D-III","A-II, B-III, C-I, D-IV"], ans:3 },
+  { topic:"India", q:"__________ in the Indian ocean is a 'Miniature India'.", opts:["Mauritius","Seychelles","Maldives","Indonesia"], ans:0 },
+  { topic:"India", q:"The Visweswaraya Iron and Steel Ltd. is located in which state of India?", opts:["Karnataka","West Bengal","Orissa","Tamil Nadu"], ans:0 },
+  { topic:"India", q:"Arrange states by sex-ratio (2011 census) from high to low: (A) Puducherry (B) Tamil Nadu (C) Andhra Pradesh (D) Manipur", opts:["A, B, C & D","B, C, A & D","A, D, B & C","B, D, A & C"], ans:0 },
+  { topic:"India", q:"Travelling from northernmost to southernmost point in mainland India, you would cover about—", opts:["4,200 Km","3,200 Km","3,000 Km","3,800 Km"], ans:1 },
+  { topic:"Climatology", q:"Which statements are true with respect to thunderstorms? (A) Common in high latitudes (B) Normal lapse rate > adiabatic rate (C) Greater instability = greater intensity & duration (D) There should be moist and stable air", opts:["A & B Only","B & C Only","C & D Only","A & D Only"], ans:1 },
+  { topic:"Environment", q:"Major environmental problems include: (A) Air & water pollution (B) Increase in Wildlife (C) Ozone layer depletion (D) Global Warming (E) Climate change", opts:["A, C, D & E Only","A, B & C Only","B, C & D Only","B, C, D & E Only
